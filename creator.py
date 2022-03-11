@@ -2,7 +2,7 @@ global domain
 domain="@hotmail.com"
 userNamePasswordFile = 'NameList.txt'
 createdUserNamePasswordFile = 'createdNames.txt'
-
+proxiesFile="proxies.txt"
 
 from randomUserNames import *
 from selenium import webdriver
@@ -21,7 +21,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
-
+def getrandomproxy():
+    proxy=random.choice(open(proxiesFile).read().split("\n"))
+    print(" using proxy ",proxy)
+    return proxy
 
 def create_account(username, password):
     #set up profile for proxy
@@ -30,11 +33,13 @@ def create_account(username, password):
     chrome_options.add_argument('disable-infobars')
     chrome_options.add_argument('--disable-logging')
     chrome_options.add_argument('--log-level=3')
+    chrome_options.add_argument('--proxy-server=http://%s' % getrandomproxy())
     chrome_options.add_experimental_option("useAutomationExtension", False)
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
     browser = webdriver.Chrome("chromedriver.exe", options=chrome_options)
-
+    #browser.get("http://whatismyip.com")
+    #time.sleep(3)
     #get reddit account creation page
     browser.get('https://signup.live.com/signup')
     browser.find_element_by_id('MemberName').send_keys(username+domain)
